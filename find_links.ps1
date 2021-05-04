@@ -3,8 +3,11 @@
 # -path | -p: Path to search (required)
 # -recurse | -r: recursive search
 # -exec | -x: Open tsv using explorer
-# -tsv | -t: Output in tsv format (tab separated file)
+# -tsv | -t: Output in tsv format (tab separated)
 # -filter | -f: Filter the target using optional wildcards Eg: *foo*
+
+# Local VC: /dpool/vcmain/dev/win/ps/find_links
+# Github: https://github.com/JavaScriptDude/find_links
 
 param (
     [Alias('r')][switch]$recurse,
@@ -16,6 +19,8 @@ param (
 
 if ($filter -eq ""){
     $filter = $false
+} else {
+    $filter = $filter.ToLower()
 }
 
 
@@ -58,7 +63,7 @@ function proc_rec {
         pc " . Targets:"
     }
     $_.Target | Sort-Object | ForEach-Object {
-        if ( $(_filter $_.Contains('$Recycle.Bin')) ) {
+        if ( $(_filter $_) ) {
             if ($tsv){
                 $null = $tsv_rows.Add([PSCustomObject]@{
                     File=$_r.Name
@@ -81,7 +86,7 @@ function proc_rec {
 function _filter(){
     if ($_.Contains('$Recycle.Bin')) { return $false }
     if (-not($filter -eq $false)){
-        return $_.toLower() -like $filter.toLower()
+        return $_.toLower() -like $filter
     }
     return $true
 }
