@@ -7,7 +7,7 @@ find_links -p <path> [-r] [-x] [-t] [-f <filter>]
 -path | -p: Path to search (required)
 -recurse | -r: recursive search
 -exec | -x: Open tsv using explorer
--tsv | -t: Output in tsv format (tab separated file)
+-tsv | -t: Output in tsv format (tab separated)
 -filter | -f: Filter the target using optional wildcards Eg: *foo*
 ```
 
