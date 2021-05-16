@@ -33,10 +33,10 @@ function main {
     
     if ($recurse) {
         if (-not($tsv)){pc "Links found under ${path} (recursive):"}
-        (get-childitem -r ${path}) | pipeline_to_proc
+        (get-childitem -r ${path}) | _proc_children
     } else {
         if (-not($tsv)){pc "Links found under ${path}:"}
-        (get-childitem ${path}) | pipeline_to_proc
+        (get-childitem ${path}) | _proc_children
     }
 
     if ($tsv){
@@ -53,33 +53,33 @@ function main {
     }
 }
 
-function pipeline_to_proc {
-    $input | where {$_.LinkType -eq 'HardLink' -or $_.LinkType -eq 'SymbolicLink'} | select Directory, Name, Length, LastWriteTime, LinkType, Target | ForEach-Object { proc_rec $_r}
-}
-function proc_rec {
-    $_r = $_
-    if (-not($tsv)){
-        pc "$($_r.Name) ($($_r.LinkType); $($_r.Directory.FullName); $("{0:N0}" -f $_r.Length); $($_r.LastWriteTime))"
-        pc " . Targets:"
-    }
-    $_.Target | Sort-Object | ForEach-Object {
-        if ( $(_filter $_) ) {
-            if ($tsv){
-                $null = $tsv_rows.Add([PSCustomObject]@{
-                    File=$_r.Name
-                    Dir=$_r.Directory.FullName
-                    LinkType=$_r.LinkType
-                    Target=$_
-                    Size=$_r.Length
-                    LastWrite=$_r.LastWriteTime
-                })
-            } else {
-                pc "   . $($_)"
+function _proc_children {
+    # Note: $input represents the full pipeline
+    $input | where {$_.LinkType -eq 'HardLink' -or $_.LinkType -eq 'SymbolicLink'} | select Directory, Name, Length, LastWriteTime, LinkType, Target | ForEach-Object {
+        $_r = $_
+        if (-not($tsv)){
+            pc "$($_r.Name) ($($_r.LinkType); $($_r.Directory.FullName); $("{0:N0}" -f $_r.Length); $($_r.LastWriteTime))"
+            pc " . Targets:"
+        }
+        $_.Target | Sort-Object | ForEach-Object {
+            if ( $(_filter $_) ) {
+                if ($tsv){
+                    $null = $tsv_rows.Add([PSCustomObject]@{
+                        File=$_r.Name
+                        Dir=$_r.Directory.FullName
+                        LinkType=$_r.LinkType
+                        Target=$_
+                        Size=$_r.Length
+                        LastWrite=$_r.LastWriteTime
+                    })
+                } else {
+                    pc "   . $($_)"
+                }
             }
         }
-    }
-    if (-not($tsv)){
-        pc ''
+        if (-not($tsv)){
+            pc ''
+        }
     }
 }
 
