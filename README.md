@@ -1,5 +1,5 @@
 # find_links
-Windows tool using Powershell to find all links in filesystem
+Windows tool using PowerShell to find all links in filesystem
 
 ### Usage: 
 ```
@@ -12,5 +12,5 @@ find_links -p <path> [-r] [-x] [-t] [-f <filter>]
 ```
 
 ### Installation:
-Just download files and put in a 'app' directory of your choosing (both cmd and ps1 are requried)
-Add the installed directory to your users PATH environment varaible
+Just download files and put in an 'app' directory of your choosing (both cmd and ps1 are requried)
+Add the installed directory to your user's PATH environment varaible
